@@ -1,33 +1,115 @@
 <!doctype html>
 <html>
 	<head>
-		<title>My Tasks</title>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
-		<script src="https://www.dropbox.com/static/api/dropbox-datastores-1.1-latest.js"></script>
-		<script src="tutorial.js"></script>
-		<link rel="stylesheet" href="style.css">
+		<title>Loading...</title>
+			<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.3/jquery.mobile-1.4.3.min.css" />
+			<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+			<script src="http://code.jquery.com/mobile/1.4.3/jquery.mobile-1.4.3.min.js"></script>
+			<script src="https://www.dropbox.com/static/api/dropbox-datastores-1.1-latest.js"></script>
+		
+			<script src="i18next-1.7.4.min.js"></script>
+			<script src="tutorial.js"></script>
+			<link rel="stylesheet" href="style.css">
+
+			<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	</head>
-	<body>
-		<!-- Hide UI until user has authenticated -->
-		<div id="wrapper">
-			<h1>My Tasks</h1>
+	<body id="body">
 
-			<div id="main" style="display:none">
-				<!-- Empty list that will be populated with tasks -->
-				<ul id="tasks"></ul>
 
-				<!-- Form to collect new tasks -->
-				<form id="addForm" method="post">
-					<input id="newTask" type="text" placeholder="Enter a new task..." />
-					<button id="addButton" type="submit">Add Task</button>
-				</form>
-				<p id="status">Connecting...</p>
-				<p id="mtime"></p>
+    <div data-role="page" id="mainPage">
+ 
+        <div data-role="header">
+            <h1 data-i18n>keychain</h1>
+        </div><!-- /header -->
+ 
+        <div data-role="content">
+
+
+
+
+			<!-- Hide UI until user has authenticated -->
+			<div id="wrapperDISABLED">
+
+					<form class="ui-filterable">
+            			<input id="filterInput"
+            			       data-type="search" 
+            			       data-mini="true" 
+            			       data-i18n="[placeholder]filter"/>
+					</form>
+
+					<!-- Empty list that will be populated with secureEntries -->
+					<ul id="secureEntries"
+						 data-role="listview" 
+					     data-inset="true">
+					</ul>
+					<!--
+				<div id="main" style="display:none">
+
+
+					<!- - Form to collect new secureEntries - ->
+					<form id="addForm" method="post">
+						<input id="newTask" type="text" placeholder="Enter a new task..." />
+						<button id="addButton" type="submit">Add Task</button>
+					</form>
+					<p id="status">Connecting...</p>
+					<p id="mtime"></p>
+				</div>
+
+				<div id="login">
+					<button id="loginButton">Link to Dropbox</button>
+				</div>
+
+			-->
+
+				<footer data-role="footer" data-position="fixed">
+	    <nav data-role="navbar" id="nav">
+	        <ul>
+	            <li><a href="#" data-icon="home">Home</a></li>
+	            <li><a href="#" data-icon="gear" data-i18n>settings</a></li>
+	            <li><a href="#" data-icon="info">Info</a></li>
+	        </ul>
+	    </nav>
+	</footer>
 			</div>
 
-			<div id="login">
-				<button id="loginButton">Link to Dropbox</button>
-			</div>
-		</div>
+
+
+
+
+
+        </div><!-- /content -->
+ 
+
+ 
+    </div><!-- /page -->
+
+
+
+
+<!--
+
+<form>
+    <div class="ui-field-contain">
+         <label for="text-14">Text input:</label>
+         <input type="text" data-mini="true" name="text-14" id="text-14" value="">
+    </div>
+    <div class="ui-field-contain">
+         <label for="text-15">Text input: data-clear-btn="true"</label>
+         <input type="text" data-clear-btn="true" data-mini="true" name="text-15" id="text-15" value="">
+    </div>
+    <div class="ui-field-contain">
+     <label for="search-9">Search:</label>
+     <input type="search" data-mini="true" name="search-9" id="search-9" value="">
+    </div>
+    <div class="ui-field-contain">
+    <label for="textarea-14">Textarea:</label>
+    <textarea data-mini="true" cols="40" rows="8" name="textarea-14" id="textarea-14"></textarea>
+    </div>
+</form>
+-->
+
+
+
+
 	</body>
 </html>
