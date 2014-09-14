@@ -8,7 +8,8 @@ var secureEntriesTable;
 
 // Current filter for secure entries
 var filterOverSecureEntries = null;
-
+// Record id being edited
+var recordIdBeginEdited = null;
 
 
 // Clear the list
@@ -30,7 +31,7 @@ function replaceListWithCurrentFilter() {
 	    
 	if (filterOverSecureEntries.length < 3) {
 		$('#secureEntries').append(
-			renderCategory("Please write at least three chars"));
+			renderCategory(i18n.t("notenoughchars")));
 		$('#secureEntries').listview ("refresh");
 		return;
 	}
@@ -73,15 +74,13 @@ function replaceListWithCurrentFilter() {
 	console.log("Se han encontrado %d registros para el filtro '%s'", recordsIn, filterOverSecureEntries);
 	if (recordsIn == 0) {
 		$('#secureEntries').append(
-			renderCategory("Nothing found, sorry"));
+			renderCategory(i18n.t("nothingfound")));
 
 	}
 
-
-
 	// Refrescar la lista para que se construya
 	$('#secureEntries').listview ("refresh");
-	$('#secureEntries').trigger( "updatelayout");	
+	//$('#secureEntries').trigger( "updatelayout");	
 }
 
 // Comprueba si el registro dado cumple el filtro actual
@@ -100,15 +99,24 @@ function registroCumpleElFiltro(record) {
 		return true;		
 	}
 	
-	console.log("Record %s no cumple el filtro", title);
+	//console.log("Record %s no cumple el filtro", title);
 	return false;
 }
 
 
 // Render secure entry.
 function renderSecureEntry(id, title) {
-	return $('<li>').attr('id', id).append(
-				$('<a>').attr('href','#').text(title)
+	return $('<li>')
+			//.attr('id', id)
+			//.addClass('secureEntry')
+		.append($('<a>')
+				.attr('id', id)
+				.addClass('secureEntry')
+				.attr('href','#editEntryPage')
+				.attr('data-rel','popup')
+				.attr('data-position-to','window')
+				.attr('data-recordId', id)
+			    .text(title)
 			);
 }
 
@@ -123,24 +131,104 @@ function renderCategory(text) {
 		;
 }
 
+// Evento: Click sobre entradas (ver http://jsfiddle.net/Palestinian/RFv4C/)
+$(document).on('pagebeforeshow', "#mainPage",function () {
+    $(document).on('click', ".secureEntry",function (e) {  
+    	//alert("Clicked over "+e.target.id);
+		recordIdBeginEdited = e.target.id;
+
+	    $( "#secureEntryPage" ).popup( "open");
+  
+        //$.mobile.changePage('second.html', { dataUrl : "second.html?paremeter=123", data : { 'paremeter' : '123' }, reloadPage : false, changeHash : true });
+    });
+});
+
+/** Convert from a bitArray to an array of bytes. */
+ function bytes_fromBits (arr) {
+    var out = [], bl = sjcl.bitArray.bitLength(arr), i, tmp;
+    for (i=0; i<bl/8; i++) {
+      if ((i&3) === 0) {
+        tmp = arr[i/4];
+      }
+      out.push(tmp >>> 24);
+      tmp <<= 8;
+    }
+    return out;
+  };
+  /** Convert from an array of bytes to a bitArray. */
+function  bytes_toBits (bytes) {
+    var out = [], i, tmp=0;
+    for (i=0; i<bytes.length; i++) {
+      tmp = tmp << 8 | bytes[i];
+      if ((i&3) === 3) {
+        out.push(tmp);
+        tmp = 0;
+      }
+    }
+    if (i&3) {
+      out.push(sjcl.bitArray.partial(8*(i&3), tmp));
+    }
+    return out;
+  };
+  
+// Event: Abrir ventana de edicion
+$( document ).on( "popupbeforeposition", "#editEntryPage", function(e, data) {
+	$("#password").val("ID es " + recordIdBeginEdited);
+
+	// Get the record
+	var record = secureEntriesTable.get(recordIdBeginEdited);
+	if (record == null) {
+		return;
+	}
+
+	// Show loading...
+	$.mobile.loading( 'show', {
+		text: 'Loading entry...',
+		textVisible: true
+	});
+
+	// Decypher payload
+	var payloadCyphered = record.get('payload');
+	var payloadCypheredBits = bytes_toBits(payloadCyphered);
+	
+	// Master password ...
+	var pass = "699^g,n)9&Q5[^u6$B*Y,Lyc2!K1erhACU4PUAO6";
+	
+	// Decypher
+	var payloadDecyphered = RNCryptor.Decrypt(pass, payloadCypheredBits, null);
+	var payloadDecypheredString = sjcl.codec.utf8String.fromBits(payloadDecyphered);
+	var payloadDecypheredValues = jQuery.parseJSON( payloadDecypheredString );
+	
+	// Hide spinner	
+	$.mobile.loading('hide');
+	
+	// Show values
+	$("#title").val(record.get('title'));
+	$("#category").val(record.get('caegory'));
+	$("#username").val(payloadDecypheredValues['u']);
+	$("#password").val(payloadDecypheredValues['p']);
+	$("#note").val(payloadDecypheredValues['n']);
+	
+	
+});
+
+
 $(function () {
 	
 	// Multilanguage
 	i18n.init({ fallbackLng: 'en' , debug: true, getAsync: false});
 	$(document).i18n();
 
-
-
-
-	// Actualizar el filtro a lo nuevo escrito por el usuario
+	// Evento: nueva tecla sobre la caja de busqueda
 	$('#filterInput').keyup(function () {
-		// before doing anything else, set the last-value data property
+		// Actualizar el filtro a lo nuevo escrito por el usuario
 		filterOverSecureEntries = $('#filterInput').val().toLowerCase();
 		replaceListWithCurrentFilter();
 	});
 
-	// Detectar el boton clear de la caja de texto
+	// Evento: click sobre boton de limpiar caja de busqueda
 	$('.ui-content').on('click', '.ui-input-clear', function(e){
+		// Borrar el filtro
 		filterOverSecureEntries = null;
    		clearList();
 	}) ;
@@ -267,9 +355,6 @@ $(function () {
 					$('<a>').attr('href','#').text(text)
 				);
 	}
-
-
-
 
 	// Register event listeners to handle completing and deleting.
 	function addListeners() {

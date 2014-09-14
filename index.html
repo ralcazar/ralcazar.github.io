@@ -1,28 +1,32 @@
 <!doctype html>
 <html>
-	<head>
-		<title>Loading...</title>
-			<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.3/jquery.mobile-1.4.3.min.css" />
-			<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-			<script src="http://code.jquery.com/mobile/1.4.3/jquery.mobile-1.4.3.min.js"></script>
-			<script src="https://www.dropbox.com/static/api/dropbox-datastores-1.1-latest.js"></script>
-		
-			<script src="i18next-1.7.4.min.js"></script>
-			<script src="tutorial.js"></script>
-			<link rel="stylesheet" href="style.css">
+<head>
+	<title>Loading...</title>
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.3/jquery.mobile-1.4.3.min.css" />
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.4.3/jquery.mobile-1.4.3.min.js"></script>
+	<script src="https://www.dropbox.com/static/api/dropbox-datastores-1.1-latest.js"></script>
 
-			<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	</head>
-	<body id="body">
+	<script src="i18next-1.7.4.min.js"></script>
+	<script src="tutorial.js"></script>
+	<link rel="stylesheet" href="style.css">
 
+	<script type="text/javascript" src="sjcl.js"></script>
+	<script src="rncryptor.js"></script>
 
-    <div data-role="page" id="mainPage">
- 
-        <div data-role="header">
-            <h1 data-i18n>keychain</h1>
-        </div><!-- /header -->
- 
-        <div data-role="content">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+</head>
+<body id="body">
+
+  <script src="sjcl.js"></script>
+
+	<div data-role="page" id="mainPage">
+
+		<div data-role="header">
+			<h1 data-i18n>keychain</h1>
+		</div><!-- /header -->
+
+		<div data-role="content">
 
 
 
@@ -30,18 +34,18 @@
 			<!-- Hide UI until user has authenticated -->
 			<div id="wrapperDISABLED">
 
-					<form class="ui-filterable">
-            			<input id="filterInput"
-            			       data-type="search" 
-            			       data-mini="true" 
-            			       data-i18n="[placeholder]filter"/>
-					</form>
+				<form class="ui-filterable">
+					<input id="filterInput"
+					data-type="search" 
+					disableed-data-mini="true" 
+					data-i18n="[placeholder]filter"/>
+				</form>
 
-					<!-- Empty list that will be populated with secureEntries -->
-					<ul id="secureEntries"
-						 data-role="listview" 
-					     data-inset="true">
-					</ul>
+				<!-- Empty list that will be populated with secureEntries -->
+				<ul id="secureEntries"
+				data-role="listview" 
+				data-inset="true">
+			</ul>
 					<!--
 				<div id="main" style="display:none">
 
@@ -61,27 +65,68 @@
 
 			-->
 
-				<footer data-role="footer" data-position="fixed">
-	    <nav data-role="navbar" id="nav">
-	        <ul>
-	            <li><a href="#" data-icon="home">Home</a></li>
-	            <li><a href="#" data-icon="gear" data-i18n>settings</a></li>
-	            <li><a href="#" data-icon="info">Info</a></li>
-	        </ul>
-	    </nav>
-	</footer>
+
+			<div id="editEntryPage"
+				data-role="popup" 
+				class="ui-corner-all">
+
+
+				<form>
+	    			<ul data-role="listview" data-inset="true">
+	        			<li class="ui-field-contain">
+	            			<label for="title" data-i18n>title</label>
+	            			<input type="text" name="title" id="title" value="" data-clear-btn="true">
+	        			</li>
+	        			<li class="ui-field-contain">
+	            			<label for="category" data-i18n>category</label>
+	            			<input type="text" name="category" id="category" value="" data-clear-btn="true">
+	        			</li>
+	        			<li class="ui-field-contain">
+	            			<label for="username" data-i18n>username</label>
+	            			<input type="text" name="username" id="username" value="" data-clear-btn="true">
+	        			</li>
+	        			<li class="ui-field-contain">
+	            			<label for="password" data-i18n>password</label>
+	            			<input type="text" name="password" id="password" value="" data-clear-btn="true">
+	        			</li>
+	        			<li class="ui-field-contain">
+	            			<label for="note" data-i18n>note</label>
+	        				<textarea cols="40" rows="80" name="note" id="note"></textarea>
+	        			</li>
+				        <li class="ui-body ui-body-b">
+				            <fieldset class="ui-grid-a">
+				                 <div class="ui-block-a" />
+				                 <div class="ui-block-a" />
+				                 <div class="ui-block-a">
+				                 	<button type="submit" class="ui-btn ui-corner-all ui-btn-a" data-i18n>close</button>
+				                 </div>
+				            </fieldset>
+				        </li>
+				    </ul>
+				</form>
 			</div>
 
+			<footer data-role="footer" data-position="fixed">
+				<nav data-role="navbar" id="nav">
+					<ul>
+						<li><a href="#" data-icon="home">Home</a></li>
+						<li><a href="#" data-icon="gear" data-i18n>settings</a></li>
+						<li><a href="#" data-icon="info">Info</a></li>
+					</ul>
+				</nav>
+			</footer>
+		</div>
 
 
 
 
 
-        </div><!-- /content -->
- 
 
- 
-    </div><!-- /page -->
+	</div><!-- /content -->
+
+
+
+</div><!-- /page -->
 
 
 
@@ -111,5 +156,5 @@
 
 
 
-	</body>
+</body>
 </html>
