@@ -17,7 +17,9 @@
   
     .day{grid-template-columns:repeat(2,minmax(0,1fr))}.day .absence{flex-wrap:nowrap;font-size:1rem;font-weight:650;gap:8px}.absence input{flex-shrink:0}.summary .balance{display:block;align-self:center}.summary .balance strong{color:#80e4b7;font-size:1.2rem;margin:0;letter-spacing:normal}.summary .balance.negative strong{color:#ff8f86}.time-table{margin:18px 0}.time-table table{width:100%;border-collapse:collapse;background:white;font-variant-numeric:tabular-nums;font-size:.875rem}.time-table caption{text-align:left;font-weight:650;margin-bottom:10px;font-size:1rem}.time-table th,.time-table td{padding:10px 8px;border-bottom:1px solid #dce4ea;text-align:right}.time-table th:first-child{text-align:left}.time-table thead{color:#586b7a}.time-table tbody th{font-weight:500}.time-table tfoot{background:#e4f5eb;color:#176438;font-weight:700}.time-table tfoot .negative{background:#ffe8e6;color:#ad241e}.time-table .muted{display:block;font-size:.75rem}
   
-    .day{grid-template-columns:minmax(0,1fr) 44px minmax(0,1fr) minmax(0,1fr);gap:8px;padding:8px}.day .absence{gap:5px;white-space:nowrap;font-size:1rem}.day select{padding:4px 1px;font-size:16px;min-height:44px}.day .required select{text-align:center}.day .required{margin:0;padding:0}
+    .day{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) minmax(0,.9fr) minmax(0,.9fr);gap:6px;padding:8px}.day .absence{gap:5px;white-space:nowrap;font-size:1rem}.day select{padding:4px 1px;font-size:16px;min-height:44px}.day .required select{text-align:center}.day .required{margin:0;padding:0}
+  
+    .day select[data-field="start"],.day select[data-field="end"]{padding:2px 0;text-align:center;appearance:none;-webkit-appearance:none;min-height:40px}.day .required select{padding:4px 0}.time-table th,.time-table td{padding:10px 5px}.time-table td{white-space:nowrap}
   </style>
 </head>
 <body>
@@ -31,7 +33,7 @@
   <p id="warning" class="warning" role="status" hidden></p>
   <section aria-labelledby="days-title"><div class="section-head"><h2 id="days-title">Horario semanal</h2><p class="muted">Entrada y salida en pasos de 5 minutos</p></div><div id="days"></div></section>
   <section class="time-table" aria-label="Tiempos por día">
-    <table><caption>Tiempos de la semana</caption><thead><tr><th scope="col">Día</th><th scope="col">Trabajado</th><th scope="col">Efectivo</th></tr></thead><tbody id="time-rows"></tbody><tfoot><tr id="time-total"><th scope="row">Suma</th><td id="sum-worked"></td><td id="sum-effective"></td></tr></tfoot></table>
+    <table><caption>Tiempos de la semana <span class="muted">Horas:minutos</span></caption><thead><tr><th scope="col">Día</th><th scope="col">Trabajado</th><th scope="col">Efectivo</th><th scope="col">Exigido</th></tr></thead><tbody id="time-rows"></tbody><tfoot><tr id="time-total"><th scope="row">Suma</th><td id="sum-worked"></td><td id="sum-effective"></td><td id="sum-required"></td></tr></tfoot></table>
   </section>
   <section class="rules" aria-label="Reglas de cálculo"><div><h2>Horario permitido</h2><p>Entrada de 07:30 a 09:00 y salida de 14:00 a 20:00. La jornada siempre cubre de 09:00 a 14:00.</p></div><div><h2>Pausa automática</h2><p>Las primeras 7 horas cuentan completas. Durante la hora siguiente el contador efectivo se detiene; después vuelve a sumar.</p></div></section>
   <p id="storage" role="status"></p>
@@ -96,7 +98,7 @@ function timeSelect(i,field,label,min,max) {
   return `<div><select id="${field}-${i}" data-day="${i}" data-field="${field}" aria-label="${label} del ${DAYS[i]}">${options(min,max,5,state[i][field],clock)}</select></div>`;
 }
 function buildDays() {
-  document.getElementById('days').innerHTML = state.map((d,i) => `<article class="day ${d.absent?'absent':''}" id="card-${i}" aria-labelledby="day-${i}"><label class="absence" id="day-${i}"><input type="checkbox" data-day="${i}" data-field="present" aria-label="${DAYS[i]}: no ausente" ${!d.absent?'checked':''}><span>${SHORT_DAYS[i]}</span></label><div class="required" id="required-${i}"><select id="required-select-${i}" data-day="${i}" data-field="required" aria-label="Jornada exigida del ${DAYS[i]}" ${d.absent?'disabled':''}><option value="420" ${d.required===420?'selected':''} aria-label="Intensiva, 7 horas">I</option><option value="456" ${d.required===456?'selected':''} aria-label="Normal, 7 horas 36 minutos">N</option></select></div>${timeSelect(i,'start','Entrada',450,540)}${timeSelect(i,'end','Salida',840,1200)}</article>`).join('');
+  document.getElementById('days').innerHTML = state.map((d,i) => `<article class="day ${d.absent?'absent':''}" id="card-${i}" aria-labelledby="day-${i}"><label class="absence" id="day-${i}"><input type="checkbox" data-day="${i}" data-field="present" aria-label="${DAYS[i]}: no ausente" ${!d.absent?'checked':''}><span>${SHORT_DAYS[i]}</span></label><div class="required" id="required-${i}"><select id="required-select-${i}" data-day="${i}" data-field="required" aria-label="Jornada exigida del ${DAYS[i]}" ${d.absent?'disabled':''}><option value="420" ${d.required===420?'selected':''} aria-label="Intensiva, 7 horas">Intens.</option><option value="456" ${d.required===456?'selected':''} aria-label="Normal, 7 horas 36 minutos">Normal</option></select></div>${timeSelect(i,'start','Entrada',450,540)}${timeSelect(i,'end','Salida',840,1200)}</article>`).join('');
 }
 function summary() {
   const required = state.reduce((sum,d)=>sum+(d.absent?0:d.required),0);
@@ -115,9 +117,10 @@ function render() {
   document.getElementById('total-effective').textContent=duration(totals.effective);
   document.getElementById('balance').textContent=`${totals.balance<0?'Te faltan':'Te sobran'} ${duration(Math.abs(totals.balance))}`;
   document.querySelector('.balance').classList.toggle('negative',totals.balance<0);
-  document.getElementById('time-rows').innerHTML=state.map((d,i)=>{const t=calculate(d);return `<tr><th scope="row">${DAYS[i]}${d.absent?' <span class="muted">(ausente)</span>':''}</th><td>${duration(t.worked)}</td><td>${duration(t.effective)}</td></tr>`;}).join('');
-  document.getElementById('sum-worked').textContent=duration(state.reduce((sum,d)=>sum+calculate(d).worked,0));
-  document.getElementById('sum-effective').textContent=duration(totals.effective);
+  document.getElementById('time-rows').innerHTML=state.map((d,i)=>{const t=calculate(d);return `<tr><th scope="row">${DAYS[i]}${d.absent?' <span class="muted">(ausente)</span>':''}</th><td title="${duration(t.worked)}">${clock(t.worked)}</td><td title="${duration(t.effective)}">${clock(t.effective)}</td><td title="${duration(d.absent?0:d.required)}">${clock(d.absent?0:d.required)}</td></tr>`;}).join('');
+  document.getElementById('sum-worked').textContent=clock(state.reduce((sum,d)=>sum+calculate(d).worked,0));
+  document.getElementById('sum-effective').textContent=clock(totals.effective);
+  document.getElementById('sum-required').textContent=clock(totals.required);
   document.getElementById('time-total').classList.toggle('negative',totals.balance<0);
   const progress=document.getElementById('progress');
   progress.max=Math.max(totals.required,1);progress.value=Math.min(totals.effective,progress.max);
