@@ -8,8 +8,8 @@
   <title>Mi jornada · Calculadora semanal</title>
   <style>
     :root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#193448;background:#f2f5f8;font-size:16px;font-synthesis:none;color-scheme:light}
-    [hidden]{display:none!important}*{box-sizing:border-box}body{margin:0}button,select{font:inherit;min-height:44px}button{cursor:pointer}button:focus-visible,select:focus-visible{outline:3px solid #007aa0;outline-offset:2px}main{max-width:900px;margin:auto;padding:28px 20px 36px}header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}h1{font-size:1.8rem;letter-spacing:-.045em;margin:0}p{line-height:1.4;margin:0}.muted{color:#586b7a;font-size:.86rem}.reset{background:white;color:#193448;border:1px solid #bac8d1;border-radius:9px;padding:8px 13px}.summary{background:#173c55;color:white;border-radius:16px;padding:20px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr 1.15fr;gap:18px}.summary-label{font-size:.8rem;color:#c9dce8}.summary strong{font-size:1.7rem;display:block;margin-top:5px;letter-spacing:-.035em;font-variant-numeric:tabular-nums}.summary .balance{border-left:1px solid #628097;padding-left:18px}.summary .balance.negative strong{color:#ff8f86}.balance span{color:#c9dce8;font-size:.8rem}.summary progress{display:block;width:100%;height:5px;margin-top:10px;accent-color:#72d7d2}.warning{background:#fff3c4;color:#654600;border:1px solid #e0b342;padding:10px 13px;border-radius:9px;margin-bottom:14px;font-size:.86rem}h2{font-size:1.05rem;margin:0}.section-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:9px}.day{display:grid;grid-template-columns:.75fr 1fr 1fr 1fr 1fr 1fr;gap:10px;align-items:center;background:white;padding:13px;margin-bottom:8px;border:1px solid #dce4ea;border-radius:11px}.day h3{font-size:.95rem;margin:0}.field-label{font-size:.76rem;color:#586b7a;display:block;margin-bottom:4px}.required{border-radius:7px;padding:5px;margin:-5px}.required.unusual{background:#fff3c4;outline:1px solid #e0b342}.required-note{font-size:.7rem;display:block;margin-top:3px;color:#654600}select{width:100%;border:1px solid #bac8d1;border-radius:7px;background:#fff;color:#193448;padding:5px;font-weight:600;font-variant-numeric:tabular-nums}.result{font-weight:650;font-size:.9rem;font-variant-numeric:tabular-nums;white-space:nowrap}.effective{color:#06645f}#storage{margin-top:12px;font-size:.8rem;color:#586b7a}#storage.error{color:#8d3818}
-    @media(max-width:620px){main{padding:17px 10px 28px}header{margin-bottom:13px;padding:0 3px}h1{font-size:1.48rem}.reset{font-size:.8rem;min-height:38px;padding:5px 9px}.summary{grid-template-columns:1fr 1fr;padding:14px;gap:12px;margin-bottom:11px}.summary .balance{grid-column:1/-1;padding:10px 0 0;border-left:0;border-top:1px solid #628097;display:grid;grid-template-columns:1fr auto;align-items:end}.summary .balance strong{grid-row:1/3;grid-column:2;margin:0}.summary strong{font-size:1.42rem}.summary progress{margin-top:6px}.warning{margin-bottom:10px;padding:8px 10px}.section-head{padding:0 3px}.section-head .muted{display:none}.day{grid-template-columns:.7fr 1.05fr 1.05fr 1.05fr;padding:10px 8px;gap:9px 7px}.day h3{font-size:.88rem}.worked{grid-column:2/3}.effective{grid-column:3/5}.field-label{font-size:.68rem}.result{font-size:.86rem}.required-note{display:none}.rules{display:none}#storage{padding:0 3px}}
+    [hidden]{display:none!important}*{box-sizing:border-box}body{margin:0}button,select{font:inherit;min-height:44px}button{cursor:pointer}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #007aa0;outline-offset:2px}main{max-width:940px;margin:auto;padding:28px 20px 36px}header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}h1{font-size:1.8rem;letter-spacing:-.045em;margin:0}p{line-height:1.4;margin:0}.muted{color:#586b7a;font-size:.86rem}.reset{background:white;color:#193448;border:1px solid #bac8d1;border-radius:9px;padding:8px 13px}.summary{background:#173c55;color:white;border-radius:16px;padding:20px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr 1.15fr;gap:18px}.summary-label{font-size:.8rem;color:#c9dce8}.summary strong{font-size:1.7rem;display:block;margin-top:5px;letter-spacing:-.035em;font-variant-numeric:tabular-nums}.summary .balance{border-left:1px solid #628097;padding-left:18px}.summary .balance.negative strong{color:#ff8f86}.balance span{color:#c9dce8;font-size:.8rem}.summary progress{display:block;width:100%;height:5px;margin-top:10px;accent-color:#72d7d2}.warning{background:#fff3c4;color:#654600;border:1px solid #e0b342;padding:10px 13px;border-radius:9px;margin-bottom:14px;font-size:.86rem}h2{font-size:1.05rem;margin:0}.section-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:9px}.day{display:grid;grid-template-columns:.7fr .8fr 1fr 1fr 1fr .9fr .9fr;gap:9px;align-items:center;background:white;padding:13px;margin-bottom:8px;border:1px solid #dce4ea;border-radius:11px}.day.absent{background:#edf1f4;color:#687986}.day h3{font-size:.95rem;margin:0}.field-label{font-size:.76rem;color:#586b7a;display:block;margin-bottom:4px}.absence{display:flex;align-items:center;gap:6px;font-size:.78rem;color:#425d70;min-height:44px}.absence input{width:20px;height:20px;accent-color:#173c55}.required{border-radius:7px;padding:5px;margin:-5px}.required.unusual{background:#fff3c4;outline:1px solid #e0b342}.required-note{font-size:.7rem;display:block;margin-top:3px;color:#654600}select{width:100%;border:1px solid #bac8d1;border-radius:7px;background:#fff;color:#193448;padding:5px;font-weight:600;font-variant-numeric:tabular-nums}select:disabled{opacity:.55}.result{font-weight:650;font-size:.9rem;font-variant-numeric:tabular-nums;white-space:nowrap}.effective{color:#06645f}.absent .effective{color:#687986}#storage{margin-top:12px;font-size:.8rem;color:#586b7a}#storage.error{color:#8d3818}
+    @media(max-width:620px){main{padding:17px 10px 28px}header{margin-bottom:13px;padding:0 3px}h1{font-size:1.48rem}.reset{font-size:.8rem;min-height:38px;padding:5px 9px}.summary{grid-template-columns:1fr 1fr;padding:14px;gap:12px;margin-bottom:11px}.summary .balance{grid-column:1/-1;padding:10px 0 0;border-left:0;border-top:1px solid #628097;display:grid;grid-template-columns:1fr auto;align-items:end}.summary .balance strong{grid-row:1/3;grid-column:2;margin:0}.summary strong{font-size:1.42rem}.summary progress{margin-top:6px}.warning{margin-bottom:10px;padding:8px 10px}.section-head{padding:0 3px}.section-head .muted{display:none}.day{grid-template-columns:.72fr 1.15fr 1.15fr 1.15fr;padding:10px 8px;gap:8px 6px}.day h3{font-size:.88rem}.absence{font-size:.72rem}.worked{grid-column:2/3}.effective{grid-column:3/5}.field-label{font-size:.68rem}.result{font-size:.86rem}.required-note{display:none}.rules{display:none}#storage{padding:0 3px}}
     @media(prefers-reduced-motion:no-preference){button{transition:background .15s}button:hover:not(:disabled){background:#dce8ef}}
   </style>
 </head>
@@ -31,17 +31,19 @@
 const DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
 const KEY = 'mi-jornada.semana.v1';
 const REQUIRED_OPTIONS = [420, 456];
-const defaults = () => DAYS.map(() => ({ required:456, start:450, end:840 }));
+const defaults = () => DAYS.map(() => ({ required:456, start:450, end:870, absent:false }));
 const clock = n => `${String(Math.floor(n / 60)).padStart(2,'0')}:${String(n % 60).padStart(2,'0')}`;
 const duration = n => `${Math.floor(n / 60)} h ${String(n % 60).padStart(2,'0')} min`;
 function calculate(day) {
+  if(day.absent) return { worked:0, effective:0 };
   const worked = day.end - day.start;
   return { worked, effective: Math.min(worked,420) + Math.max(0,worked-480) };
 }
 function validDay(d) {
   return d && REQUIRED_OPTIONS.includes(d.required) &&
     Number.isInteger(d.start) && d.start >= 450 && d.start <= 540 && d.start % 5 === 0 &&
-    Number.isInteger(d.end) && d.end >= 840 && d.end <= 1200 && d.end % 5 === 0;
+    Number.isInteger(d.end) && d.end >= 840 && d.end <= 1200 && d.end % 5 === 0 &&
+    (d.absent === undefined || typeof d.absent === 'boolean');
 }
 let state = defaults();
 let storageMessage = 'Los cambios se guardan en este navegador y dispositivo.';
@@ -51,7 +53,7 @@ try {
   if (raw !== null) {
     const saved = JSON.parse(raw);
     if (saved.version !== 1 || !Array.isArray(saved.days) || saved.days.length !== 5 || !saved.days.every(validDay)) throw new Error('invalid');
-    state = saved.days.map(({required,start,end}) => ({required,start,end}));
+    state = saved.days.map(({required,start,end,absent=false}) => ({required,start,end,absent}));
   }
 } catch (_) {
   storageMessage = 'No se han podido recuperar los datos guardados. Se muestran los valores iniciales.';
@@ -76,21 +78,23 @@ function timeSelect(i,field,label,min,max) {
   return `<div><label class="field-label" for="${field}-${i}">${label}</label><select id="${field}-${i}" data-day="${i}" data-field="${field}" aria-label="${label} del ${DAYS[i]}">${options(min,max,5,state[i][field],clock)}</select></div>`;
 }
 function buildDays() {
-  document.getElementById('days').innerHTML = state.map((d,i) => `<article class="day" aria-labelledby="day-${i}"><h3 id="day-${i}">${DAYS[i]}</h3><div class="required" id="required-${i}"><label class="field-label" for="required-select-${i}">Jornada</label><select id="required-select-${i}" data-day="${i}" data-field="required" aria-label="Jornada exigida del ${DAYS[i]}"><option value="420" ${d.required===420?'selected':''}>7 h</option><option value="456" ${d.required===456?'selected':''}>7 h 36</option></select><span class="required-note" id="note-${i}" hidden>Distinto de 7 h 36 min</span></div>${timeSelect(i,'start','Entrada',450,540)}${timeSelect(i,'end','Salida',840,1200)}<div class="worked"><span class="field-label">Trabajado</span><output class="result" id="worked-${i}"></output></div><div class="effective"><span class="field-label">Efectivo</span><output class="result" id="effective-${i}"></output></div></article>`).join('');
+  document.getElementById('days').innerHTML = state.map((d,i) => `<article class="day ${d.absent?'absent':''}" id="card-${i}" aria-labelledby="day-${i}"><h3 id="day-${i}">${DAYS[i]}</h3><label class="absence"><input type="checkbox" data-day="${i}" data-field="absent" ${d.absent?'checked':''}>Ausente</label><div class="required" id="required-${i}"><label class="field-label" for="required-select-${i}">Jornada</label><select id="required-select-${i}" data-day="${i}" data-field="required" aria-label="Jornada exigida del ${DAYS[i]}" ${d.absent?'disabled':''}><option value="420" ${d.required===420?'selected':''}>7 h</option><option value="456" ${d.required===456?'selected':''}>7 h 36</option></select><span class="required-note" id="note-${i}" hidden>Distinto de 7 h 36 min</span></div>${timeSelect(i,'start','Entrada',450,540)}${timeSelect(i,'end','Salida',840,1200)}<div class="worked"><span class="field-label">Trabajado</span><output class="result" id="worked-${i}"></output></div><div class="effective"><span class="field-label">Efectivo</span><output class="result" id="effective-${i}"></output></div></article>`).join('');
 }
 function summary() {
-  const required = state.reduce((sum,d)=>sum+d.required,0);
+  const required = state.reduce((sum,d)=>sum+(d.absent?0:d.required),0);
   const effective = state.reduce((sum,d)=>sum+calculate(d).effective,0);
   return { required, effective, balance:effective-required };
 }
 function render() {
   state.forEach((d,i)=>{
     const result = calculate(d);
-    document.getElementById(`worked-${i}`).textContent=duration(result.worked);
-    document.getElementById(`effective-${i}`).textContent=duration(result.effective);
-    document.getElementById(`required-${i}`).classList.toggle('unusual',d.required!==456);
-    document.getElementById(`note-${i}`).hidden=d.required===456;
-    for(const field of ['start','end']) document.getElementById(`${field}-${i}`).value=d[field];
+    document.getElementById(`worked-${i}`).textContent=d.absent?'—':duration(result.worked);
+    document.getElementById(`effective-${i}`).textContent=d.absent?'—':duration(result.effective);
+    document.getElementById(`required-${i}`).classList.toggle('unusual',!d.absent&&d.required!==456);
+    document.getElementById(`note-${i}`).hidden=d.absent||d.required===456;
+    document.getElementById(`card-${i}`).classList.toggle('absent',d.absent);
+    document.getElementById(`required-select-${i}`).disabled=d.absent;
+    for(const field of ['start','end']) {const el=document.getElementById(`${field}-${i}`);el.value=d[field];el.disabled=d.absent;}
   });
   const totals=summary();
   document.getElementById('total-required').textContent=duration(totals.required);
@@ -100,7 +104,7 @@ function render() {
   document.querySelector('.balance').classList.toggle('negative',totals.balance<0);
   const progress=document.getElementById('progress');
   progress.max=Math.max(totals.required,1);progress.value=Math.min(totals.effective,progress.max);
-  const changed=DAYS.filter((_,i)=>state[i].required!==456);
+  const changed=DAYS.filter((_,i)=>!state[i].absent&&state[i].required!==456);
   const warning=document.getElementById('warning');
   warning.hidden=changed.length===0;
   warning.textContent=`Advertencia: el tiempo exigido no es 7 h 36 min en ${changed.join(', ')}. El resumen utiliza los valores que has seleccionado.`;
@@ -109,13 +113,13 @@ function render() {
 document.getElementById('days').addEventListener('change',event=>{
   const {day,field}=event.target.dataset;
   if(day===undefined||!field)return;
-  const i=Number(day), value=Number(event.target.value), next={...state[i]};
-  next[field]=value;
+  const i=Number(day), next={...state[i]};
+  next[field]=field==='absent' ? event.target.checked : Number(event.target.value);
   if(!validDay(next))return;
   state[i]=next;save();render();
 });
 document.getElementById('reset').addEventListener('click',()=>{
-  if(!confirm('¿Restablecer todos los días a 7 h 36 min, entrada 07:30 y salida 14:00?'))return;
+  if(!confirm('¿Restablecer todos los días a 7 h 36 min, entrada 07:30 y salida 14:30?'))return;
   state=defaults();save();buildDays();render();
 });
 buildDays();render();
