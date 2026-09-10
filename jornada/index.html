@@ -16,6 +16,8 @@
     dialog{width:min(92vw,390px);border:1px solid #bac8d1;border-radius:16px;padding:24px;color:#193448;box-shadow:0 18px 70px #0003}dialog::backdrop{background:#10273788}dialog h2{font-size:1.25rem;margin-bottom:10px}dialog p{margin-bottom:18px}dialog button{width:100%;border:1px solid #bac8d1;border-radius:9px;padding:10px;background:#edf3f7;color:#193448;margin-top:8px}dialog .cancel{background:white}dialog button:focus-visible{outline:3px solid #007aa0}
   
     .day{grid-template-columns:repeat(2,minmax(0,1fr))}.day .absence{flex-wrap:nowrap;font-size:1rem;font-weight:650;gap:8px}.absence input{flex-shrink:0}.summary .balance{display:block;align-self:center}.summary .balance strong{color:#80e4b7;font-size:1.2rem;margin:0;letter-spacing:normal}.summary .balance.negative strong{color:#ff8f86}.time-table{margin:18px 0}.time-table table{width:100%;border-collapse:collapse;background:white;font-variant-numeric:tabular-nums;font-size:.875rem}.time-table caption{text-align:left;font-weight:650;margin-bottom:10px;font-size:1rem}.time-table th,.time-table td{padding:10px 8px;border-bottom:1px solid #dce4ea;text-align:right}.time-table th:first-child{text-align:left}.time-table thead{color:#586b7a}.time-table tbody th{font-weight:500}.time-table tfoot{background:#e4f5eb;color:#176438;font-weight:700}.time-table tfoot .negative{background:#ffe8e6;color:#ad241e}.time-table .muted{display:block;font-size:.75rem}
+  
+    .day{grid-template-columns:minmax(0,1fr) 44px minmax(0,1fr) minmax(0,1fr);gap:8px;padding:8px}.day .absence{gap:5px;white-space:nowrap;font-size:1rem}.day select{padding:4px 1px;font-size:16px;min-height:44px}.day .required select{text-align:center}.day .required{margin:0;padding:0}
   </style>
 </head>
 <body>
@@ -44,6 +46,7 @@
 <script>
 'use strict';
 const DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+const SHORT_DAYS = ['Lun', 'Mar', 'Mier', 'Jue', 'Vie'];
 const KEY = 'mi-jornada.semana.v1';
 const REQUIRED_OPTIONS = [420, 456];
 const defaults = (required=456) => DAYS.map(() => ({ required, start:450, end:870, absent:false }));
@@ -90,10 +93,10 @@ function options(min,max,step,selected,formatter) {
   return html;
 }
 function timeSelect(i,field,label,min,max) {
-  return `<div><label class="field-label" for="${field}-${i}">${label}</label><select id="${field}-${i}" data-day="${i}" data-field="${field}" aria-label="${label} del ${DAYS[i]}">${options(min,max,5,state[i][field],clock)}</select></div>`;
+  return `<div><select id="${field}-${i}" data-day="${i}" data-field="${field}" aria-label="${label} del ${DAYS[i]}">${options(min,max,5,state[i][field],clock)}</select></div>`;
 }
 function buildDays() {
-  document.getElementById('days').innerHTML = state.map((d,i) => `<article class="day ${d.absent?'absent':''}" id="card-${i}" aria-labelledby="day-${i}"><label class="absence" id="day-${i}"><input type="checkbox" data-day="${i}" data-field="present" aria-label="${DAYS[i]}: no ausente" ${!d.absent?'checked':''}><span>${DAYS[i]}</span></label><div class="required" id="required-${i}"><select id="required-select-${i}" data-day="${i}" data-field="required" aria-label="Jornada exigida del ${DAYS[i]}" ${d.absent?'disabled':''}><option value="420" ${d.required===420?'selected':''}>Intensiva</option><option value="456" ${d.required===456?'selected':''}>Normal</option></select><span class="kind-note" id="kind-${i}">${d.required===456?'7 h 36 min':'7 h'}</span></div>${timeSelect(i,'start','Entrada',450,540)}${timeSelect(i,'end','Salida',840,1200)}</article>`).join('');
+  document.getElementById('days').innerHTML = state.map((d,i) => `<article class="day ${d.absent?'absent':''}" id="card-${i}" aria-labelledby="day-${i}"><label class="absence" id="day-${i}"><input type="checkbox" data-day="${i}" data-field="present" aria-label="${DAYS[i]}: no ausente" ${!d.absent?'checked':''}><span>${SHORT_DAYS[i]}</span></label><div class="required" id="required-${i}"><select id="required-select-${i}" data-day="${i}" data-field="required" aria-label="Jornada exigida del ${DAYS[i]}" ${d.absent?'disabled':''}><option value="420" ${d.required===420?'selected':''} aria-label="Intensiva, 7 horas">I</option><option value="456" ${d.required===456?'selected':''} aria-label="Normal, 7 horas 36 minutos">N</option></select></div>${timeSelect(i,'start','Entrada',450,540)}${timeSelect(i,'end','Salida',840,1200)}</article>`).join('');
 }
 function summary() {
   const required = state.reduce((sum,d)=>sum+(d.absent?0:d.required),0);
@@ -103,7 +106,6 @@ function summary() {
 function render() {
   state.forEach((d,i)=>{
     document.getElementById(`required-${i}`).classList.toggle('unusual',!d.absent&&d.required!==456);
-    document.getElementById(`kind-${i}`).textContent=d.required===456?'7 h 36 min':'7 h';
     document.getElementById(`card-${i}`).classList.toggle('absent',d.absent);
     document.getElementById(`required-select-${i}`).disabled=d.absent;
     for(const field of ['start','end']) {const el=document.getElementById(`${field}-${i}`);el.value=d[field];el.disabled=d.absent;}
