@@ -14,6 +14,8 @@
   
     .day>*{min-width:0}.day{gap:12px 10px}.day h3{overflow-wrap:anywhere}.field-label{font-size:.875rem}.absence{font-size:.875rem}.required{padding:0;margin:0}.required-note{display:none}.result{white-space:normal;font-size:1rem}.effective .result{display:flex;align-items:center;min-height:44px}.day select{font-size:16px;min-width:0;max-width:100%}.required select{font-size:16px}.day .absence{flex-wrap:wrap;gap:4px}.absence input{margin:0}.required.unusual{outline-offset:2px}.kind-note{display:block;font-size:.875rem;color:#586b7a;margin-top:3px}
     dialog{width:min(92vw,390px);border:1px solid #bac8d1;border-radius:16px;padding:24px;color:#193448;box-shadow:0 18px 70px #0003}dialog::backdrop{background:#10273788}dialog h2{font-size:1.25rem;margin-bottom:10px}dialog p{margin-bottom:18px}dialog button{width:100%;border:1px solid #bac8d1;border-radius:9px;padding:10px;background:#edf3f7;color:#193448;margin-top:8px}dialog .cancel{background:white}dialog button:focus-visible{outline:3px solid #007aa0}
+  
+    .day{grid-template-columns:repeat(2,minmax(0,1fr))}.day .absence{flex-wrap:nowrap;font-size:1rem;font-weight:650;gap:8px}.absence input{flex-shrink:0}.summary .balance{display:block;align-self:center}.summary .balance strong{color:#80e4b7;font-size:1.2rem;margin:0;letter-spacing:normal}.summary .balance.negative strong{color:#ff8f86}.time-table{margin:18px 0}.time-table table{width:100%;border-collapse:collapse;background:white;font-variant-numeric:tabular-nums;font-size:.875rem}.time-table caption{text-align:left;font-weight:650;margin-bottom:10px;font-size:1rem}.time-table th,.time-table td{padding:10px 8px;border-bottom:1px solid #dce4ea;text-align:right}.time-table th:first-child{text-align:left}.time-table thead{color:#586b7a}.time-table tbody th{font-weight:500}.time-table tfoot{background:#e4f5eb;color:#176438;font-weight:700}.time-table tfoot .negative{background:#ffe8e6;color:#ad241e}.time-table .muted{display:block;font-size:.75rem}
   </style>
 </head>
 <body>
@@ -22,10 +24,13 @@
   <section class="summary" aria-label="Resumen semanal" aria-live="polite" aria-atomic="true">
     <div><p class="summary-label">Tiempo efectivo</p><strong id="total-effective"></strong><progress id="progress" aria-label="Tiempo efectivo respecto al exigido"></progress></div>
     <div><p class="summary-label">Tiempo exigido</p><strong id="total-required"></strong></div>
-    <div class="balance"><p class="summary-label" id="balance-label"></p><strong id="balance"></strong><span>Balance de la semana</span></div>
+    <div class="balance"><strong id="balance"></strong></div>
   </section>
   <p id="warning" class="warning" role="status" hidden></p>
   <section aria-labelledby="days-title"><div class="section-head"><h2 id="days-title">Horario semanal</h2><p class="muted">Entrada y salida en pasos de 5 minutos</p></div><div id="days"></div></section>
+  <section class="time-table" aria-label="Tiempos por día">
+    <table><caption>Tiempos de la semana</caption><thead><tr><th scope="col">Día</th><th scope="col">Trabajado</th><th scope="col">Efectivo</th></tr></thead><tbody id="time-rows"></tbody><tfoot><tr id="time-total"><th scope="row">Suma</th><td id="sum-worked"></td><td id="sum-effective"></td></tr></tfoot></table>
+  </section>
   <section class="rules" aria-label="Reglas de cálculo"><div><h2>Horario permitido</h2><p>Entrada de 07:30 a 09:00 y salida de 14:00 a 20:00. La jornada siempre cubre de 09:00 a 14:00.</p></div><div><h2>Pausa automática</h2><p>Las primeras 7 horas cuentan completas. Durante la hora siguiente el contador efectivo se detiene; después vuelve a sumar.</p></div></section>
   <p id="storage" role="status"></p>
 </main>
@@ -88,7 +93,7 @@ function timeSelect(i,field,label,min,max) {
   return `<div><label class="field-label" for="${field}-${i}">${label}</label><select id="${field}-${i}" data-day="${i}" data-field="${field}" aria-label="${label} del ${DAYS[i]}">${options(min,max,5,state[i][field],clock)}</select></div>`;
 }
 function buildDays() {
-  document.getElementById('days').innerHTML = state.map((d,i) => `<article class="day ${d.absent?'absent':''}" id="card-${i}" aria-labelledby="day-${i}"><h3 id="day-${i}">${DAYS[i]}</h3><label class="absence"><input type="checkbox" data-day="${i}" data-field="absent" ${d.absent?'checked':''}>Ausente</label><div class="required" id="required-${i}"><select id="required-select-${i}" data-day="${i}" data-field="required" aria-label="Jornada exigida del ${DAYS[i]}" ${d.absent?'disabled':''}><option value="420" ${d.required===420?'selected':''}>Intensiva</option><option value="456" ${d.required===456?'selected':''}>Normal</option></select><span class="kind-note" id="kind-${i}">${d.required===456?'7 h 36 min':'7 h'}</span></div>${timeSelect(i,'start','Entrada',450,540)}${timeSelect(i,'end','Salida',840,1200)}<div class="effective"><span class="field-label">Efectivo</span><output class="result" id="effective-${i}"></output></div></article>`).join('');
+  document.getElementById('days').innerHTML = state.map((d,i) => `<article class="day ${d.absent?'absent':''}" id="card-${i}" aria-labelledby="day-${i}"><label class="absence" id="day-${i}"><input type="checkbox" data-day="${i}" data-field="present" aria-label="${DAYS[i]}: no ausente" ${!d.absent?'checked':''}><span>${DAYS[i]}</span></label><div class="required" id="required-${i}"><select id="required-select-${i}" data-day="${i}" data-field="required" aria-label="Jornada exigida del ${DAYS[i]}" ${d.absent?'disabled':''}><option value="420" ${d.required===420?'selected':''}>Intensiva</option><option value="456" ${d.required===456?'selected':''}>Normal</option></select><span class="kind-note" id="kind-${i}">${d.required===456?'7 h 36 min':'7 h'}</span></div>${timeSelect(i,'start','Entrada',450,540)}${timeSelect(i,'end','Salida',840,1200)}</article>`).join('');
 }
 function summary() {
   const required = state.reduce((sum,d)=>sum+(d.absent?0:d.required),0);
@@ -97,8 +102,6 @@ function summary() {
 }
 function render() {
   state.forEach((d,i)=>{
-    const result = calculate(d);
-    document.getElementById(`effective-${i}`).textContent=d.absent?'—':duration(result.effective);
     document.getElementById(`required-${i}`).classList.toggle('unusual',!d.absent&&d.required!==456);
     document.getElementById(`kind-${i}`).textContent=d.required===456?'7 h 36 min':'7 h';
     document.getElementById(`card-${i}`).classList.toggle('absent',d.absent);
@@ -108,9 +111,12 @@ function render() {
   const totals=summary();
   document.getElementById('total-required').textContent=duration(totals.required);
   document.getElementById('total-effective').textContent=duration(totals.effective);
-  document.getElementById('balance-label').textContent=totals.balance<0?'Te faltan':totals.balance>0?'Te sobran':'Objetivo cumplido';
-  document.getElementById('balance').textContent=duration(Math.abs(totals.balance));
+  document.getElementById('balance').textContent=`${totals.balance<0?'Te faltan':'Te sobran'} ${duration(Math.abs(totals.balance))}`;
   document.querySelector('.balance').classList.toggle('negative',totals.balance<0);
+  document.getElementById('time-rows').innerHTML=state.map((d,i)=>{const t=calculate(d);return `<tr><th scope="row">${DAYS[i]}${d.absent?' <span class="muted">(ausente)</span>':''}</th><td>${duration(t.worked)}</td><td>${duration(t.effective)}</td></tr>`;}).join('');
+  document.getElementById('sum-worked').textContent=duration(state.reduce((sum,d)=>sum+calculate(d).worked,0));
+  document.getElementById('sum-effective').textContent=duration(totals.effective);
+  document.getElementById('time-total').classList.toggle('negative',totals.balance<0);
   const progress=document.getElementById('progress');
   progress.max=Math.max(totals.required,1);progress.value=Math.min(totals.effective,progress.max);
   const changed=DAYS.filter((_,i)=>!state[i].absent&&state[i].required!==456);
@@ -123,7 +129,8 @@ document.getElementById('days').addEventListener('change',event=>{
   const {day,field}=event.target.dataset;
   if(day===undefined||!field)return;
   const i=Number(day), next={...state[i]};
-  next[field]=field==='absent' ? event.target.checked : Number(event.target.value);
+  if(field==='present')next.absent=!event.target.checked;
+  else next[field]=Number(event.target.value);
   if(!validDay(next))return;
   state[i]=next;save();render();
 });
