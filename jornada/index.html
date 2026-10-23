@@ -41,7 +41,7 @@
     <div class="balance"><strong id="balance"></strong></div>
   </section>
   <p id="warning" class="warning" role="status" hidden></p>
-  <section aria-labelledby="days-title"><div class="section-head"><h2 id="days-title">Horario semanal</h2><p class="muted">Entrada y salida en pasos de 15 minutos</p></div><div class="day-columns" aria-hidden="true"><span>Día</span><span title="Jornada intensiva">I</span><span>Entrada</span><span>Salida</span><span title="Teletrabajo">TT</span><span title="Opción BdE: C o T">BdE</span></div><div id="days"></div><p class="day-legend">I: marcada = intensiva; sin marcar = normal · TT: teletrabajo · BdE: C / T</p></section>
+  <section aria-labelledby="days-title"><div class="section-head"><h2 id="days-title">Horario semanal</h2><p class="muted">Entrada y salida en pasos de 15 minutos</p></div><div class="day-columns" aria-hidden="true"><span>Día</span><span title="Jornada intensiva">I</span><span>Entrada</span><span>Salida</span><span title="Teletrabajo">TT</span><span title="Comer en casa o en la oficina">C/T</span></div><div id="days"></div><p class="day-legend">I: marcada = intensiva; sin marcar = normal · TT: teletrabajo · C: comer en casa · T: comer en la oficina</p></section>
   <section class="time-table" aria-label="Tiempos por día">
     <table><caption>Tiempos de la semana <span class="muted">Horas:minutos</span></caption><thead><tr><th scope="col">Día</th><th scope="col">Trabajado</th><th scope="col">Efectivo</th><th scope="col">Exigido</th></tr></thead><tbody id="time-rows"></tbody><tfoot><tr id="time-total"><th scope="row">Suma</th><td id="sum-worked"></td><td id="sum-effective"></td><td id="sum-required"></td></tr></tfoot></table>
   </section>
@@ -50,7 +50,7 @@
 </main>
 <dialog id="reset-dialog" aria-labelledby="reset-title" aria-describedby="reset-description">
   <h2 id="reset-title">¿Qué horario quieres restablecer?</h2>
-  <p id="reset-description">Se aplicará a todos los días: entrada 07:30, salida 14:30, sin ausencias, teletrabajo desmarcado y BdE en T.</p>
+  <p id="reset-description">Se aplicará a todos los días: entrada 07:30, salida 14:30, sin ausencias, teletrabajo desmarcado y lugar para comer sin seleccionar.</p>
   <button type="button" data-reset="456">Normal · 7 h 36 min</button>
   <button type="button" data-reset="420">Intensivo · 7 h</button>
   <button type="button" class="cancel" id="cancel-reset" autofocus>Cancelar</button>
@@ -61,7 +61,7 @@ const DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
 const SHORT_DAYS = ['L', 'M', 'X', 'J', 'V'];
 const KEY = 'mi-jornada.semana.v1';
 const REQUIRED_OPTIONS = [420, 456];
-const defaults = (required=456) => DAYS.map(() => ({ required, start:450, end:870, absent:false, telework:false, lunchBde:false, mealBde:'T' }));
+const defaults = (required=456) => DAYS.map(() => ({ required, start:450, end:870, absent:false, telework:false, lunchBde:false, mealBde:'' }));
 const clock = n => `${String(Math.floor(n / 60)).padStart(2,'0')}:${String(n % 60).padStart(2,'0')}`;
 const duration = n => `${Math.floor(n / 60)} h ${String(n % 60).padStart(2,'0')} min`;
 function calculate(day) {
@@ -73,7 +73,7 @@ function validDay(d) {
   return d && REQUIRED_OPTIONS.includes(d.required) &&
     Number.isInteger(d.start) && d.start >= 450 && d.start <= 540 && d.start % 5 === 0 &&
     Number.isInteger(d.end) && d.end >= 840 && d.end <= 1200 && d.end % 5 === 0 &&
-    (d.mealBde === undefined || ['C','T'].includes(d.mealBde)) &&
+    (d.mealBde === undefined || ['','C','T'].includes(d.mealBde)) &&
     ['absent','telework','lunchBde'].every(field => d[field] === undefined || typeof d[field] === 'boolean');
 }
 let state = defaults();
@@ -84,7 +84,7 @@ try {
   if (raw !== null) {
     const saved = JSON.parse(raw);
     if (saved.version !== 1 || !Array.isArray(saved.days) || saved.days.length !== 5 || !saved.days.every(validDay)) throw new Error('invalid');
-    state = saved.days.map(({required,start,end,absent=false,telework=false,lunchBde=false,mealBde=lunchBde?'C':'T'}) => ({required,start,end,absent,telework,lunchBde:mealBde==='C',mealBde}));
+    state = saved.days.map(({required,start,end,absent=false,telework=false,lunchBde=false,mealBde=lunchBde?'T':''}) => ({required,start,end,absent,telework,lunchBde:mealBde==='T',mealBde}));
   }
 } catch (_) {
   storageMessage = 'No se han podido recuperar los datos guardados. Se muestran los valores iniciales.';
@@ -114,7 +114,7 @@ function flagCheck(i,field,label) {
   return `<label class="day-flag" title="${label}"><input type="checkbox" id="${field}-${i}" data-day="${i}" data-field="${field}" aria-label="${DAYS[i]}: ${label}" ${state[i][field]?'checked':''} ${state[i].absent?'disabled':''}></label>`;
 }
 function buildDays() {
-  document.getElementById('days').innerHTML = state.map((d,i) => `<article class="day ${d.absent?'absent':''}" id="card-${i}" aria-labelledby="day-${i}"><label class="absence" id="day-${i}"><input type="checkbox" data-day="${i}" data-field="present" aria-label="${DAYS[i]}: no ausente" ${!d.absent?'checked':''}><span title="${DAYS[i]}" aria-label="${DAYS[i]}">${SHORT_DAYS[i]}</span></label><div class="required" id="required-${i}"><label class="day-flag" title="Jornada intensiva"><input type="checkbox" id="intensive-${i}" data-day="${i}" data-field="intensive" aria-label="${DAYS[i]}: jornada intensiva" ${d.required===420?'checked':''} ${d.absent?'disabled':''}></label></div>${timeSelect(i,'start','Entrada',450,540)}${timeSelect(i,'end','Salida',840,1200)}${flagCheck(i,'telework','Teletrabajo')}<div><select class="meal-select" id="mealBde-${i}" data-day="${i}" data-field="mealBde" aria-label="${DAYS[i]}: opción BdE" ${d.absent?'disabled':''}><option value="C" ${d.mealBde==='C'?'selected':''}>C</option><option value="T" ${d.mealBde==='T'?'selected':''}>T</option></select></div></article>`).join('');
+  document.getElementById('days').innerHTML = state.map((d,i) => `<article class="day ${d.absent?'absent':''}" id="card-${i}" aria-labelledby="day-${i}"><label class="absence" id="day-${i}"><input type="checkbox" data-day="${i}" data-field="present" aria-label="${DAYS[i]}: no ausente" ${!d.absent?'checked':''}><span title="${DAYS[i]}" aria-label="${DAYS[i]}">${SHORT_DAYS[i]}</span></label><div class="required" id="required-${i}"><label class="day-flag" title="Jornada intensiva"><input type="checkbox" id="intensive-${i}" data-day="${i}" data-field="intensive" aria-label="${DAYS[i]}: jornada intensiva" ${d.required===420?'checked':''} ${d.absent?'disabled':''}></label></div>${timeSelect(i,'start','Entrada',450,540)}${timeSelect(i,'end','Salida',840,1200)}${flagCheck(i,'telework','Teletrabajo')}<div><select class="meal-select" id="mealBde-${i}" data-day="${i}" data-field="mealBde" aria-label="${DAYS[i]}: comer en casa o en la oficina" ${d.absent?'disabled':''}><option value="" ${d.mealBde===''?'selected':''} aria-label="Sin seleccionar"></option><option value="C" title="Comer en casa" ${d.mealBde==='C'?'selected':''}>C</option><option value="T" title="Comer en la oficina" ${d.mealBde==='T'?'selected':''}>T</option></select></div></article>`).join('');
 }
 function summary() {
   const required = state.reduce((sum,d)=>sum+(d.absent?0:d.required),0);
@@ -155,7 +155,7 @@ document.getElementById('days').addEventListener('change',event=>{
   if(field==='present')next.absent=!event.target.checked;
   else if(field==='intensive')next.required=event.target.checked?420:456;
   else if(field==='telework')next.telework=event.target.checked;
-  else if(field==='mealBde'){next.mealBde=event.target.value;next.lunchBde=next.mealBde==='C';}
+  else if(field==='mealBde'){next.mealBde=event.target.value;next.lunchBde=next.mealBde==='T';}
   else if(['start','end'].includes(field)){
     next[field]=Number(event.target.value);
     if(next[field]%15!==0&&next[field]!==state[i][field])return;
